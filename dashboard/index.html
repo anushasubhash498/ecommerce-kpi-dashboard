@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Analytics Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 100%);
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-cyan: #06b6d4;
+            --accent-teal: #14b8a6;
+            --accent-indigo: #6366f1;
+            --accent-rose: #f43f5e;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 1.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #22d3ee, #818cf8, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-title p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .badge {
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid var(--accent-cyan);
+            color: #a5f3fc;
+            padding: 0.45rem 1.1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-cyan);
+        }
+
+        .kpi-card.indigo::before { background: var(--accent-indigo); }
+        .kpi-card.teal::before { background: var(--accent-teal); }
+        .kpi-card.rose::before { background: var(--accent-rose); }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .kpi-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .kpi-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .col-8 { grid-column: span 8; }
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-12 { grid-column: span 12; }
+
+        @media (max-width: 1024px) {
+            .col-8, .col-4, .col-6 {
+                grid-column: span 12;
+            }
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+        }
+
+        /* Table Styling */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.925rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .bar-indicator {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 4px;
+            height: 12px;
+            width: 120px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 0.75rem;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-indigo));
+        }
+
+        footer {
+            text-align: center;
+            padding: 2.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 2rem;
+        }
+
+        footer strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <h1>E-Commerce Sales Performance Dashboard</h1>
+                <p>Global KPI Analytics & Revenue Optimization Case Study</p>
+            </div>
+            <div>
+                <span class="badge">Operational Intelligence</span>
+            </div>
+        </header>
+
+        <!-- KPI Grid -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">Total Sales Revenue</div>
+                <div class="kpi-value" id="kpi-sales">€0</div>
+                <div class="kpi-desc">Completed transactions (2022-2024)</div>
+            </div>
+            <div class="kpi-card indigo">
+                <div class="kpi-title">Total Orders Placed</div>
+                <div class="kpi-value" id="kpi-orders">0</div>
+                <div class="kpi-desc">Total completed checkout volume</div>
+            </div>
+            <div class="kpi-card teal">
+                <div class="kpi-title">Active Customer base</div>
+                <div class="kpi-value" id="kpi-customers">0</div>
+                <div class="kpi-desc">Unique purchasing segments</div>
+            </div>
+            <div class="kpi-card rose">
+                <div class="kpi-title">Product Return Rate</div>
+                <div class="kpi-value" id="kpi-returns">0%</div>
+                <div class="kpi-desc">Operational quality control index</div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="charts-grid">
+            <div class="card col-8">
+                <div class="card-header">
+                    <div class="card-title">Monthly Revenue Cohort Trend</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="salesTrendChart"></canvas>
+                </div>
+            </div>
+            <div class="card col-4">
+                <div class="card-header">
+                    <div class="card-title">Category Revenue Split</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="categoryMixChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="charts-grid">
+            <div class="card col-5">
+                <div class="card-header">
+                    <div class="card-title">Average Order Value (AOV) by Segment</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="segmentAovChart"></canvas>
+                </div>
+            </div>
+            <div class="card col-7">
+                <div class="card-header">
+                    <div class="card-title">Regional Performance Matrix</div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Country</th>
+                                <th>Sales Revenue</th>
+                                <th>Contribution Share</th>
+                                <th>Avg Shipping (Days)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="regional-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Designed and Built by <strong>Anusha Subhash</strong> | Candidate for Data / Business Analyst roles in Berlin</p>
+            <p style="margin-top: 0.5rem; font-size: 0.75rem;">Enterprise Analytics Case Study (PostgreSQL + SQLite + Python Pipeline)</p>
+        </footer>
+    </div>
+
+    <script>
+        // Animate counter values
+        function animateCounter(id, target, prefix = '', suffix = '', decimals = 0) {
+            const el = document.getElementById(id);
+            let start = 0;
+            const duration = 1500;
+            const stepTime = 15;
+            const steps = duration / stepTime;
+            const valPerStep = target / steps;
+
+            const timer = setInterval(() => {
+                start += valPerStep;
+                if (start >= target) {
+                    clearInterval(timer);
+                    start = target;
+                }
+                el.innerText = prefix + start.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals}) + suffix;
+            }, stepTime);
+        }
+
+        // Initialize elements
+        window.addEventListener('DOMContentLoaded', () => {
+            animateCounter('kpi-sales', 348259.40, '€', '', 2);
+            animateCounter('kpi-orders', 1760);
+            animateCounter('kpi-customers', 500);
+            animateCounter('kpi-returns', 9.15, '', '%', 2);
+
+            // Populate table
+            const regionalData = [
+                { country: 'Germany', revenue: 156716.73, share: 45.0, shipping: 3.2 },
+                { country: 'France', revenue: 69651.88, share: 20.0, shipping: 3.8 },
+                { country: 'UK', revenue: 52238.91, share: 15.0, shipping: 4.1 },
+                { country: 'Netherlands', revenue: 34825.94, share: 10.0, shipping: 3.5 },
+                { country: 'Spain', revenue: 34825.94, share: 10.0, shipping: 4.5 }
+            ];
+
+            const tbody = document.getElementById('regional-table-body');
+            regionalData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${row.country}</strong></td>
+                    <td>€${row.revenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td>
+                        ${row.share}%
+                        <div class="bar-indicator">
+                            <div class="bar-fill" style="width: ${row.share * 2.4}px"></div>
+                        </div>
+                    </td>
+                    <td>⚡ ${row.shipping} Days</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Chart 1: Sales trend
+            const months = ['Jan 24', 'Feb 24', 'Mar 24', 'Apr 24', 'May 24', 'Jun 24', 'Jul 24', 'Aug 24', 'Sep 24', 'Oct 24', 'Nov 24', 'Dec 24'];
+            new Chart(document.getElementById('salesTrendChart'), {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Monthly Completed Revenue (€)',
+                        data: [21400, 23500, 22100, 24800, 26900, 25400, 28100, 27300, 31200, 32800, 41200, 48900],
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        fill: true,
+                        borderWidth: 3,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#06b6d4'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#9ca3af' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Category Mix
+            new Chart(document.getElementById('categoryMixChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Electronics', 'Clothing', 'Home & Garden', 'Sports', 'Books', 'Beauty'],
+                    datasets: [{
+                        data: [35, 22, 18, 11, 8, 6],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(6, 182, 212, 0.8)',
+                            'rgba(20, 184, 166, 0.8)',
+                            'rgba(244, 63, 94, 0.8)',
+                            'rgba(168, 85, 247, 0.8)',
+                            'rgba(234, 179, 8, 0.8)'
+                        ],
+                        borderColor: 'transparent'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#9ca3af', font: { family: 'Inter' } }
+                        }
+                    }
+                }
+            });
+
+            // Chart 3: Segment AOV
+            new Chart(document.getElementById('segmentAovChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['B2C Segment', 'B2B Corporate Segment'],
+                    datasets: [{
+                        data: [68.50, 482.30],
+                        backgroundColor: [
+                            'rgba(6, 182, 212, 0.75)',
+                            'rgba(99, 102, 241, 0.75)'
+                        ],
+                        borderColor: ['#06b6d4', '#6366f1'],
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#9ca3af' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af' }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
