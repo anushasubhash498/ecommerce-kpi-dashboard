@@ -1,0 +1,31 @@
+product_id,product_name,category,subcategory,unit_cost,unit_price,stock_quantity
+P001,Smartphone Model Lite,Electronics,Smartphone,256.0,332.8,280
+P002,Laptop Model Pro,Electronics,Laptop,478.83,622.48,30
+P003,Headphones Model Classic,Electronics,Headphones,135.8,176.54,97
+P004,Smartwatch Model Lite,Electronics,Smartwatch,380.61,494.79,161
+P005,Bluetooth Speaker Model Plus,Electronics,Bluetooth Speaker,61.32,79.72,267
+P006,T-Shirt Model Plus,Clothing,T-Shirt,75.7,151.4,201
+P007,Jeans Model Classic,Clothing,Jeans,22.84,45.68,31
+P008,Hoodie Model Lite,Clothing,Hoodie,40.24,80.48,58
+P009,Jacket Model Plus,Clothing,Jacket,52.83,105.66,179
+P010,Sneakers Model Lite,Clothing,Sneakers,78.16,156.32,280
+P011,Desk Lamp Model X,Home & Garden,Desk Lamp,85.76,137.22,253
+P012,Office Chair Model Classic,Home & Garden,Office Chair,23.59,37.74,144
+P013,Coffee Table Model Plus,Home & Garden,Coffee Table,98.34,157.34,283
+P014,Plant Pot Model Pro,Home & Garden,Plant Pot,189.31,302.9,23
+P015,Bed Sheets Model Pro,Home & Garden,Bed Sheets,86.3,138.08,62
+P016,Yoga Mat Model Lite,Sports,Yoga Mat,83.69,125.53,273
+P017,Dumbbells Model Plus,Sports,Dumbbells,109.57,164.35,59
+P018,Running Shoes Model Pro,Sports,Running Shoes,40.85,61.28,63
+P019,Water Bottle Model Pro,Sports,Water Bottle,70.29,105.44,200
+P020,Backpack Model Pro,Sports,Backpack,94.14,141.21,171
+P021,Fiction Novel Model Plus,Books,Fiction Novel,22.9,41.22,279
+P022,Science Textbook Model Classic,Books,Science Textbook,5.9,10.62,222
+P023,Biography Model Pro,Books,Biography,10.43,18.77,62
+P024,Cookbook Model Plus,Books,Cookbook,24.31,43.76,197
+P025,Self-Help Book Model Classic,Books,Self-Help Book,10.52,18.94,166
+P026,Moisturizer Model X,Beauty,Moisturizer,14.11,23.99,18
+P027,Perfume Model Lite,Beauty,Perfume,24.29,41.29,72
+P028,Shampoo Model Lite,Beauty,Shampoo,24.31,41.33,172
+P029,Lipstick Model Pro,Beauty,Lipstick,71.24,121.11,270
+P030,Face Mask Model Plus,Beauty,Face Mask,37.39,63.56,50
